@@ -47,10 +47,10 @@ async function remove(id) {
 }
 
 async function run() {
-    await set('Shane.Buffy', 'password');
-    await set('Caleb.Boe', '1234');
-    await set('Brian.Corrugated', 'ironbru');
-    await set('admin', 'admin1234');
+    await set('Shane.Buffy'.toLowerCase(), 'password');
+    await set('Caleb.Boe'.toLowerCase(), '1234');
+    await set('Brian.Corrugated'.toLowerCase(), 'ironbru');
+    await set('admin'.toLowerCase(), 'admin1234');
 }
 run().catch((ex) => {
     console.error(ex.stack);
@@ -74,19 +74,16 @@ app.get('/login', (req, res) => {
 
     async function get() {
         await prepared;
-        const results = await db.query(sql`
-    SELECT * FROM users;
-  `);
+        const user = req.query.user.toLowerCase();
+        const pw = req.query.password.toLowerCase();
+        let query = 'SELECT * FROM users WHERE username='+user+' AND pw='+pw+';';
+        console.log(query)
+        const results = await db.query(sql`${query}`);
+        console.log(results)
         if (results.length) {
-            if (results[0].username.toLowerCase() === req.query.user.toLowerCase()
-                && results[0].pw.toLowerCase() === req.query.password.toLowerCase()
-            ) {
-                res.send(200)
-            } else {
-                res.send(401)
-            }
+            res.send(200)
         } else {
-            res.send(404);
+            res.send(401);
         }
     }
 

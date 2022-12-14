@@ -21,21 +21,24 @@ export const Login = (props) => {
     }
 
     const [auth, setAuth] =  React.useState(false)
+    const [loggingIn, setLoggingIn] = React.useState(false)
 
     const login = async() => {
-        return await fetch(`http://localhost:3005/login?user=${user}&password=${pw}`)
-            .then((response) => response)
-            .then((data) => {
-                if (data.status !== 200) {
-                    setAuth(false)
-                } else {
-                    setAuth(true)
-                }
-            });
+            return await fetch(`http://localhost:3005/login?user=${user}&password=${pw}`)
+                .then((response) => response)
+                .then((data) => {
+                    if (data.status !== 200) {
+                        setAuth(false)
+                    } else {
+                        setAuth(true)
+                    }
+                });
     }
 
     useEffect(() => {
-        login()
+        if (loggingIn) {
+            login()
+        }
     })
 
     return(
@@ -61,7 +64,7 @@ export const Login = (props) => {
                 <SecondaryButton
                     onClick={() => {
                         setLoggedInUser(user);
-                        login();
+                        setLoggingIn(true)
                         if (!auth) {
                             setPage('login')
                         } else {
