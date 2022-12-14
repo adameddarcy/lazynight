@@ -9,6 +9,7 @@ import {Header} from "./components/header";
 import {Login} from "./components/login";
 import {Forum} from "./components/forum";
 import {News} from "./components/news";
+import {Admin} from "./components/admin";
 
 function App() {
 
@@ -52,6 +53,13 @@ function App() {
                         {header}
                         <News/>
                         </>
+                )
+            case 'admin':
+                return (
+                    <>
+                        {header}
+                        <Admin/>
+                    </>
                 )
             default:
                 return (<login setPage={setPage}/>)

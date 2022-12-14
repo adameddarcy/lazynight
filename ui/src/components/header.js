@@ -17,6 +17,19 @@ export const Header = (props) => {
         borderRadius: '50%',
     }
 
+    const adminButton  = username !== 'admin' ? (<SecondaryButton
+        style={{visibility: 'hidden'}}
+        onClick={() => {setPage('admin')}}
+    >
+        Admin Panel
+    </SecondaryButton>) : (
+        <SecondaryButton
+            onClick={() => {setPage('admin')}}
+        >
+            Admin Panel
+        </SecondaryButton>
+    )
+
     return(
 
         <Card style={{
@@ -33,6 +46,11 @@ export const Header = (props) => {
                         }}
                              className={circle} src={lzlogo}/>
                     </div>
+                    <StatusIndicator
+                        label={`user: ${username}`}
+                        type={StatusIndicator.Type.Blue}
+                        maxWidth={250}
+                    />
                     <SecondaryButton
                     onClick={() => {setPage('profile')}}
                     >
@@ -48,19 +66,12 @@ export const Header = (props) => {
                     >
                         News
                     </SecondaryButton>
-                    {/*<SecondaryButton>*/}
-                    {/*    Admin*/}
-                    {/*</SecondaryButton>*/}
+                    {adminButton}
                     <SecondaryButton
                         onClick={() => {setPage('login')}}
                     >
                         Logout
                     </SecondaryButton>
-                    <StatusIndicator
-                        label={`user: ${username}`}
-                        type={StatusIndicator.Type.Blue}
-                        maxWidth={250}
-                    />
                 </HStack>
             </Card.Body>
         </Card>
