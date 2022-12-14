@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Card, FormField, SecondaryButton, TextInput} from '@workday/canvas-kit-react'
 import lzlogo from "../assets/images/lazynightlogo.png"
 
@@ -9,14 +9,7 @@ export const Login = (props) => {
         setLoggedInUser
     } = props;
 
-    const circle = {
-        width: '100px',
-        height: '100px',
-        objectFit: 'cover',
-        borderRadius: '50%',
-    }
-
-    const [user, setUser] = React.useState('')
+    const [user, setUser] = React.useState()
     const [pw, setPw] = React.useState('')
 
     const handleUserChange = (event) => {
@@ -26,7 +19,25 @@ export const Login = (props) => {
     const handlePwChange = (event) => {
         setPw(event.target.value)
     }
-// TODO: auth against a database
+
+    const [auth, setAuth] =  React.useState(false)
+
+    const login = async() => {
+        return await fetch(`http://localhost:3005/login?user=${user}&password=${pw}`)
+            .then((response) => response)
+            .then((data) => {
+                if (data.status !== 200) {
+                    setAuth(false)
+                } else {
+                    setAuth(true)
+                }
+            });
+    }
+
+    useEffect(() => {
+        login()
+    })
+
     return(
 
         <Card>
@@ -48,7 +59,15 @@ export const Login = (props) => {
                     <TextInput onChange={handlePwChange} type="password"/>
                 </FormField>
                 <SecondaryButton
-                    onClick={() => {setLoggedInUser(user);setPage('profile')}}
+                    onClick={() => {
+                        setLoggedInUser(user);
+                        login();
+                        if (!auth) {
+                            setPage('login')
+                        } else {
+                            setPage('profile')}
+                        }
+                    }
                 >
                     Login
                 </SecondaryButton>
