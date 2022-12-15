@@ -13,6 +13,17 @@ async function prepare() {
       pw VARCHAR NOT NULL
     );
   `);
+
+    await db.query(sql`
+    CREATE TABLE feedback (
+      user VARCHAR NOT NULL,
+      msg VARCHAR NOT NULL,
+      sender VARCHAR NOT NULL
+    );
+  `);
+    await db.query(sql`
+        INSERT INTO feedback values ('john.ball', 'Thanks for all your hard work John!', 'shane.buffy'),('kat.black', 'WOW go team!', 'john.ball');
+  `);
 }
 const prepared = prepare();
 
@@ -85,6 +96,48 @@ app.get('/login', (req, res) => {
         } else {
             res.send(401);
         }
+    }
+
+    async function run() {
+        await get();
+    }
+    run().catch((ex) => {
+        console.error(ex.stack);
+        process.exit(1);
+    });
+})
+
+app.get('/getFeedback', (req, res) => {
+
+    async function get() {
+        await prepared;
+        let query = 'SELECT * FROM feedback';
+        const results = await db.query(sql(query));
+        res.send(results)
+    }
+
+    async function run() {
+        await get();
+    }
+    run().catch((ex) => {
+        console.error(ex.stack);
+        process.exit(1);
+    });
+})
+
+app.get('/sendFeedback', (req, res) => {
+
+    async function get() {
+        await prepared;
+        const from = req.query.from.toLowerCase();
+        const msg = req.query.msg.toLowerCase();
+        const sender = req.query.sender.toLowerCase();
+        let query = 'INSERT INTO feedback values '+'("'+from+'","'+msg+'","'+sender+'");';
+        let ch = 'SELECT * from feedback'
+        await db.query(sql(query));
+        const result = await db.query(sql(ch));
+        console.log(result)
+        res.send(200)
     }
 
     async function run() {
