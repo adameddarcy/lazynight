@@ -76,9 +76,9 @@ app.get('/login', (req, res) => {
         await prepared;
         const user = req.query.user.toLowerCase();
         const pw = req.query.password.toLowerCase();
-        let query = 'SELECT * FROM users WHERE username='+user+' AND pw='+pw+';';
+        let query = 'SELECT * FROM users WHERE username="' + user + '" AND pw="' + pw + '";';
         console.log(query)
-        const results = await db.query(sql`${query}`);
+        const results = await db.query(sql(query));
         console.log(results)
         if (results.length) {
             res.send(200)
