@@ -23,6 +23,13 @@ export const Login = (props) => {
     const [auth, setAuth] =  React.useState(false)
     const [loggingIn, setLoggingIn] = React.useState(false)
 
+    const genCookie = (priv) => {
+        const d = new Date();
+        d.setTime(d.getTime() + (1*24*60*60*1000));
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = "privilege" + "=" + btoa(priv) + ";" + expires + ";path=/";
+    }
+
     const login = async() => {
             return await fetch(`http://localhost:3005/login?user=${user}&password=${pw}`)
                 .then((response) => response.json())
@@ -30,6 +37,11 @@ export const Login = (props) => {
                     if (data.status != 200) {
                         setAuth(false)
                     } else {
+                        if (data.body[0].isadmin) {
+                            genCookie(data.body[0].isadmin)
+                        } else {
+                            genCookie(data.body[0].username)
+                        }
                         setAuth(true)
                         setLoggedInUser(data.body[0].username);
                     }

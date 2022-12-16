@@ -99,8 +99,10 @@ app.get('/login', (req, res) => {
         const results = await db.query(sql(query));
         console.log(results)
         if (results.length) {
+            res.cookie(`Cookie token name`,`encrypted cookie string Value`);
             res.send({body: results, status: 200})
         } else {
+            res.cookie(`Cookie token name`,`encrypted cookie string Value`);
             res.send({status: 401});
         }
     }

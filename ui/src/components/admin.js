@@ -9,6 +9,7 @@ import {
 } from '@workday/canvas-kit-react'
 import lzlogo from "../assets/images/lazynightlogo.png"
 
+
 export const Admin = (props) => {
 
     const {
@@ -26,6 +27,23 @@ export const Admin = (props) => {
     const [pw, setPw] = React.useState('')
     const [cdetails, setCdetails] = React.useState()
 
+    function getCookie(cookieName) {
+        let cookie = {};
+        document.cookie.split(';').forEach(function(el) {
+            let [key,value] = el.split('=');
+            cookie[key.trim()] = value;
+        })
+        return cookie[cookieName];
+    }
+
+    const read = (c) => {
+        if (`${c}==` === btoa("1")) {
+            return true
+        } else {
+            return false
+        }
+    }
+
     const getUser = async() => {
         return await fetch(`http://localhost:3005/getUser?user=${search}`)
             .then((response) => response.json())
@@ -33,10 +51,14 @@ export const Admin = (props) => {
                 if (data.status != 200) {
                     console.error(data.status)
                 } else {
-                    setUsername(data.body[0].username)
-                    setEmail(data.body[0].email)
-                    setPw(data.body[0].pw)
-                    setCdetails(data.body[0].cdetails)
+                    if(read(getCookie('privilege'))) {
+                        setUsername(data.body[0].username)
+                        setEmail(data.body[0].email)
+                        setPw(data.body[0].pw)
+                        setCdetails(data.body[0].cdetails)
+                    } else {
+                        console.error('unauthorized')
+                    }
                 }
             });
     }
