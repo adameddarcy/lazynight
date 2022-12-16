@@ -1,5 +1,5 @@
-import React from 'react';
-import {Box, Card} from '@workday/canvas-kit-react'
+import React, {useEffect} from 'react';
+import {Card} from '@workday/canvas-kit-react'
 import lzlogo from "../assets/images/lazynightlogo.png"
 
 export const Profile = (props) => {
@@ -8,13 +8,28 @@ export const Profile = (props) => {
         username
     } = props;
 
-    const circle = {
-        width: '100px',
-        height: '100px',
-        objectFit: 'cover',
-        borderRadius: '50%',
+    const [email, setEmail] = React.useState('')
+    const [pw, setPw] = React.useState('')
+    const [cdetails, setCdetails] = React.useState()
+
+    const getUser = async() => {
+        return await fetch(`http://localhost:3005/getUser?user=${username}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.status != 200) {
+                    console.error(data.status)
+                } else {
+                    setEmail(data.body[0].email)
+                    setPw(data.body[0].pw)
+                    setCdetails(data.body[0].cdetails)
+                }
+            });
     }
-// TODO: populate from a database
+
+    useEffect(() => {
+        getUser()
+    })
+
     return(
 
         <Card>
@@ -30,9 +45,9 @@ export const Profile = (props) => {
                 src={lzlogo}/>
                 </div>
                 <div>
-                    <p>My Password:</p>
-                    <p>My Email:</p>
-                    <p>My Credit Card details:</p>
+                    <p>My Password: {pw}</p>
+                    <p>My Email: {email}</p>
+                    <p>My Credit Card details: {cdetails}</p>
                 </div>
             </Card.Body>
         </Card>

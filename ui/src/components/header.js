@@ -57,6 +57,11 @@ export const Header = (props) => {
                         Profile
                     </SecondaryButton>
                     <SecondaryButton
+                        onClick={() => {setPage('give')}}
+                    >
+                        Give Feedback
+                    </SecondaryButton>
+                    <SecondaryButton
                         onClick={() => {setPage('forum')}}
                     >
                         Feedback forum

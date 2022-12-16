@@ -1,27 +1,17 @@
 
 import React, { useState, useEffect } from 'react';
 
-import logo from './logo.svg';
 import './App.css';
-import { getUser } from './service/userService'
 import {Profile} from "./components/profile";
 import {Header} from "./components/header";
 import {Login} from "./components/login";
 import {Forum} from "./components/forum";
 import {News} from "./components/news";
 import {Admin} from "./components/admin";
+import {GiveFeedback} from "./components/giveFeedback";
 
 function App() {
 
-  // const [users, setUsers] = useState([])
-  //
-  // useEffect(() => {
-  //     getUser()
-  //       .then(users => {
-  //         console.log(users)
-  //         setUsers(users);
-  //       });
-  // }, [])
     const [page, setPage] = useState('login')
     const [loggedInUser, setLoggedInUser] = useState('')
 
@@ -38,6 +28,13 @@ function App() {
                     <>
                         {header}
                         <Profile username={loggedInUser}/>
+                    </>
+                )
+            case 'give':
+                return (
+                    <>
+                        {header}
+                        <GiveFeedback username={loggedInUser}/>
                     </>
                 )
             case 'forum':

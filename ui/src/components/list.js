@@ -15,7 +15,7 @@ export const List = (props) => {
                         return (
                             <Card key={i}>
                                 <Card.Heading>{f.user}</Card.Heading>
-                                <Card.Body>{f.msg}</Card.Body>
+                                <Card.Body><div dangerouslySetInnerHTML={{__html: f.msg}}/></Card.Body>
                                 <hr/>
                                 From: <span
                                 dangerouslySetInnerHTML={{__html: f.sender}}

@@ -10,7 +10,9 @@ async function prepare() {
     CREATE TABLE users (
       id VARCHAR NOT NULL PRIMARY KEY,
       username VARCHAR NOT NULL,
-      pw VARCHAR NOT NULL
+      pw VARCHAR NOT NULL,
+      email VARCHAR NOT NULL,
+      cdetails INT 
     );
   `);
 
@@ -27,12 +29,12 @@ async function prepare() {
 }
 const prepared = prepare();
 
-async function set(username, pw) {
+async function set(username, pw, email, cdetails) {
     const id = `id-${username}`
     await prepared;
     await db.query(sql`
-    INSERT INTO users (id, username, pw)
-      VALUES (${id}, ${username}, ${pw})
+    INSERT INTO users (id, username, pw, email, cdetails)
+      VALUES (${id}, ${username}, ${pw}, ${email}, ${cdetails})
     ON CONFLICT (id) DO UPDATE
       SET username=excluded.username;
   `);
@@ -58,10 +60,10 @@ async function remove(id) {
 }
 
 async function run() {
-    await set('Shane.Buffy'.toLowerCase(), 'password');
-    await set('Caleb.Boe'.toLowerCase(), '1234');
-    await set('Brian.Corrugated'.toLowerCase(), 'ironbru');
-    await set('admin'.toLowerCase(), 'admin1234');
+    await set('Shane.Buffy'.toLowerCase(), 'password', 'shaneB\@lazynight.com', 11223344);
+    await set('Caleb.Boe'.toLowerCase(), '1234', 'Caleb\@lazynight.com', 88776655);
+    await set('Brian.Corrugated'.toLowerCase(), 'ironbru', 'brianC\@lazynight.com', 11998822);
+    await set('admin'.toLowerCase(), 'admin1234', 'admin\@lazynightadmin.com', 10203040);
 }
 run().catch((ex) => {
     console.error(ex.stack);
@@ -87,14 +89,38 @@ app.get('/login', (req, res) => {
         await prepared;
         const user = req.query.user.toLowerCase();
         const pw = req.query.password.toLowerCase();
-        let query = 'SELECT * FROM users WHERE username="' + user + '" AND pw="' + pw + '";';
+        let query = 'SELECT username FROM users WHERE username="' + user + '" AND pw="' + pw + '";';
         console.log(query)
         const results = await db.query(sql(query));
         console.log(results)
         if (results.length) {
-            res.send(200)
+            res.send({body: results, status: 200})
         } else {
-            res.send(401);
+            res.send({status: 401});
+        }
+    }
+
+    async function run() {
+        await get();
+    }
+    run().catch((ex) => {
+        console.error(ex.stack);
+        process.exit(1);
+    });
+})
+
+app.get('/getUser', (req, res) => {
+
+    async function get() {
+        await prepared;
+        const user = req.query.user.toLowerCase();
+        let query = 'SELECT * FROM users WHERE username="'+user+'";';
+        const results = await db.query(sql(query));
+        console.log(results)
+        if (results.length) {
+            res.send({body: results, status: 200})
+        } else {
+            res.send({status: 401});
         }
     }
 

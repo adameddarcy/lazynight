@@ -25,12 +25,13 @@ export const Login = (props) => {
 
     const login = async() => {
             return await fetch(`http://localhost:3005/login?user=${user}&password=${pw}`)
-                .then((response) => response)
+                .then((response) => response.json())
                 .then((data) => {
-                    if (data.status !== 200) {
+                    if (data.status != 200) {
                         setAuth(false)
                     } else {
                         setAuth(true)
+                        setLoggedInUser(data.body[0].username);
                     }
                 });
     }
@@ -63,7 +64,6 @@ export const Login = (props) => {
                 </FormField>
                 <SecondaryButton
                     onClick={() => {
-                        setLoggedInUser(user);
                         setLoggingIn(true)
                         if (!auth) {
                             setPage('login')
