@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
     Card,
     FormField,
@@ -12,16 +12,38 @@ import lzlogo from "../assets/images/lazynightlogo.png"
 export const Admin = (props) => {
 
     const {
-
     } = props;
 
     const [search, setSearch] = React.useState('')
-    const [user, setUser] = React.useState('Shane Buffy')
 
 
     const handleSearch = (event) => {
         setSearch(event.target.value)
     }
+
+    const [username, setUsername] = React.useState('')
+    const [email, setEmail] = React.useState('')
+    const [pw, setPw] = React.useState('')
+    const [cdetails, setCdetails] = React.useState()
+
+    const getUser = async() => {
+        return await fetch(`http://localhost:3005/getUser?user=${search}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.status != 200) {
+                    console.error(data.status)
+                } else {
+                    setUsername(data.body[0].username)
+                    setEmail(data.body[0].email)
+                    setPw(data.body[0].pw)
+                    setCdetails(data.body[0].cdetails)
+                }
+            });
+    }
+
+    useEffect(() => {
+        getUser()
+    })
 
 // TODO: populate from a database
     return(
@@ -42,8 +64,9 @@ export const Admin = (props) => {
                     <FormField label={'Search User'}>
                         <TextInput onChange={handleSearch} />
                     </FormField>
-                    <p>{user} Email:</p>
-                    <p>{user} Password:</p>
+                    <p>{username} Email: {email}</p>
+                    <p>{username} Password: {pw}</p>
+                    <p>{username} Credit Detials: {cdetails}</p>
                 </div>
                 <hr/>
                 <HStack shouldWrapChildren spacing={"s"} padding={"s"}>
