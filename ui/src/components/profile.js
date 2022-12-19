@@ -50,7 +50,7 @@ export const Profile = (props) => {
                 </div>
                 <div>
                     <FormField label={'User password'}>
-                        <TextInput onChange={handleAuth} />
+                        <TextInput onChange={handleAuth} type={"password"}/>
                     </FormField>
                     <PrimaryButton onClick={() => getAuthUser()}>Submit</PrimaryButton>
                     <p>user.name Email: {authenticated ? email : "********"}</p>
