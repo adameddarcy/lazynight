@@ -13,7 +13,9 @@ async function prepare() {
       pw VARCHAR NOT NULL,
       email VARCHAR NOT NULL,
       cdetails INT,
-      isadmin INT
+      isadmin INT,
+      ismanager INT,
+      contingent INT
     );
   `);
 
@@ -30,12 +32,12 @@ async function prepare() {
 }
 const prepared = prepare();
 
-async function set(username, pw, email, cdetails, isadmin) {
+async function set(username, pw, email, cdetails, isadmin, ismanager, contingent) {
     const id = `id-${username}`
     await prepared;
     await db.query(sql`
-    INSERT INTO users (id, username, pw, email, cdetails, isadmin)
-      VALUES (${id}, ${username}, ${pw}, ${email}, ${cdetails}, ${isadmin})
+    INSERT INTO users (id, username, pw, email, cdetails, isadmin, ismanager, contingent)
+      VALUES (${id}, ${username}, ${pw}, ${email}, ${cdetails}, ${isadmin}, ${ismanager}, ${contingent})
     ON CONFLICT (id) DO UPDATE
       SET username=excluded.username;
   `);
@@ -63,9 +65,10 @@ async function remove(id) {
 async function run() {
     await set('Shane.Buffy'.toLowerCase(), 'password', 'shaneB\@lazynight.com', 11223344);
     await set('Caleb.Boe'.toLowerCase(), '1234', 'Caleb\@lazynight.com', 88776655);
-    await set('Brian.Corrugated'.toLowerCase(), 'ironbru', 'brianC\@lazynight.com', 11998822);
+    await set('Brian.Corrugated'.toLowerCase(), 'ironbru', 'brianC\@lazynight.com', 11998822, null, 1);
     await set('sean.ciara'.toLowerCase(), 'havoc', 'sean.c\@lazynight.com', 11445522);
-    await set('admin'.toLowerCase(), 'admin1234', 'admin\@lazynightadmin.com', 10203040, 1);
+    await set('quentin.james'.toLowerCase(), 'q.james', 'quentin.j\@lazynightadmin.com', 88774422, 1);
+    await set('axel.sullivan'.toLowerCase(), 'axel', 'axel.s\@contractorco.com', null, null, null, 1);
 }
 run().catch((ex) => {
     console.error(ex.stack);
@@ -95,14 +98,10 @@ app.get('/login', (req, res) => {
         const user = req.query.user.toLowerCase();
         const pw = req.query.password.toLowerCase();
         let query = 'SELECT username, isadmin FROM users WHERE username="' + user + '" AND pw="' + pw + '";';
-        console.log(query)
         const results = await db.query(sql(query));
-        console.log(results)
         if (results.length) {
-            res.cookie(`Cookie token name`,`encrypted cookie string Value`);
             res.send({body: results, status: 200})
         } else {
-            res.cookie(`Cookie token name`,`encrypted cookie string Value`);
             res.send({status: 401});
         }
     }
@@ -116,16 +115,90 @@ app.get('/login', (req, res) => {
     });
 })
 
-app.get('/getUser', (req, res) => {
+app.get('/getUsers', (req, res) => {
+
+    async function get() {
+        await prepared;
+        let query = 'SELECT username, isadmin, ismanager, contingent FROM users;';
+        const results = await db.query(sql(query));
+        if (results.length) {
+            res.send({body: results, status: 200})
+        } else {
+            res.send({status: 401});
+        }
+    }
+
+    async function run() {
+        await get();
+    }
+    run().catch((ex) => {
+        console.error(ex.stack);
+        process.exit(1);
+    });
+})
+
+app.get('/getUserBasic', (req, res) => {
 
     async function get() {
         await prepared;
         const user = req.query.user.toLowerCase();
-        let query = 'SELECT * FROM users WHERE username="'+user+'";';
+        let query = 'SELECT username FROM users WHERE username="'+user+'";';
         const results = await db.query(sql(query));
-        console.log(results)
         if (results.length) {
             res.send({body: results, status: 200})
+        } else {
+            res.send({status: 401});
+        }
+    }
+
+    async function run() {
+        await get();
+    }
+    run().catch((ex) => {
+        console.error(ex.stack);
+        process.exit(1);
+    });
+})
+
+app.get('/getUserAuth', (req, res) => {
+
+    async function get() {
+        await prepared;
+        const user = req.query.user.toLowerCase();
+        const pw = req.query.pw.toLowerCase();
+        let query2 = 'SELECT * FROM users WHERE username="' + user + '" AND pw="' + pw + '";';
+        const results2 = await db.query(sql(query2));
+        console.log(results2)
+        if (results2.length) {
+
+            res.send({body: results2, status: 200})
+        } else {
+            res.send({status: 401});
+        }
+    }
+
+    async function run() {
+        await get();
+    }
+    run().catch((ex) => {
+        console.error(ex.stack);
+        process.exit(1);
+    });
+})
+
+app.get('/getAdminUserAuth', (req, res) => {
+
+    async function get() {
+        await prepared;
+        const user = req.query.user.toLowerCase();
+        const pw = req.query.pw.toLowerCase();
+        let query = `SELECT * FROM users WHERE pw="${pw}" AND isadmin=1`;
+        const results = await db.query(sql(query));
+        if (results.length) {
+            let query2 = 'SELECT * FROM users WHERE username="'+user+'";';
+            const results2 = await db.query(sql(query2));
+            console.log(results2)
+            res.send({body: results2, status: 200})
         } else {
             res.send({status: 401});
         }
@@ -181,6 +254,10 @@ app.get('/sendFeedback', (req, res) => {
         process.exit(1);
     });
 })
+
+app.use(express.static('files'))
+const path = require('path')
+app.use('/workerInfo', express.static(path.join(__dirname, 'private')))
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)

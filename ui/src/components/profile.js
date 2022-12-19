@@ -1,5 +1,5 @@
 import React, {useEffect} from 'react';
-import {Card} from '@workday/canvas-kit-react'
+import {Card, FormField, PrimaryButton, TextInput} from '@workday/canvas-kit-react'
 import lzlogo from "../assets/images/lazynightlogo.png"
 
 export const Profile = (props) => {
@@ -8,17 +8,21 @@ export const Profile = (props) => {
         username
     } = props;
 
+    const [authenticated, setAuthenticated] = React.useState(false)
+    const [userPw, setUserPw] = React.useState()
+
     const [email, setEmail] = React.useState('')
     const [pw, setPw] = React.useState('')
     const [cdetails, setCdetails] = React.useState()
 
-    const getUser = async() => {
-        return await fetch(`http://localhost:3005/getUser?user=${username}`)
+    const getAuthUser = async() => {
+        return await fetch(`http://localhost:3005/getUserAuth?user=${username}&pw=${userPw}`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.status != 200) {
                     console.error(data.status)
                 } else {
+                    setAuthenticated(true)
                     setEmail(data.body[0].email)
                     setPw(data.body[0].pw)
                     setCdetails(data.body[0].cdetails)
@@ -26,9 +30,9 @@ export const Profile = (props) => {
             });
     }
 
-    useEffect(() => {
-        getUser()
-    })
+    const handleAuth = (event) => {
+        setUserPw(event.target.value)
+    }
 
     return(
 
@@ -45,9 +49,13 @@ export const Profile = (props) => {
                 src={lzlogo}/>
                 </div>
                 <div>
-                    <p>My Password: {pw}</p>
-                    <p>My Email: {email}</p>
-                    <p>My Credit Card details: {cdetails}</p>
+                    <FormField label={'User password'}>
+                        <TextInput onChange={handleAuth} />
+                    </FormField>
+                    <PrimaryButton onClick={() => getAuthUser()}>Submit</PrimaryButton>
+                    <p>user.name Email: {authenticated ? email : "********"}</p>
+                    <p>user.name Password: {authenticated ? pw : "********"}</p>
+                    <p>user.name Credit Details: {authenticated ? cdetails : "********"}</p>
                 </div>
             </Card.Body>
         </Card>

@@ -1,0 +1,5 @@
+salary: 45,000
+email: quentin.j@lazynightadmin.com
+default logon: q.james (please update on start date)
+default pw: q.james (please update on start date)
+ 

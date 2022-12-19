@@ -1,0 +1,5 @@
+salary: 104,050
+email: brianC@lazynight.com
+default logon: b.corrugated (please update on start date)
+default pw: b.corrugated (please update on start date)
+ 
