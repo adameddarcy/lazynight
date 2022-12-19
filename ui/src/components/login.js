@@ -57,6 +57,9 @@ export const Login = (props) => {
     return(
 
         <Card>
+            <Card.Heading>LazyNight</Card.Heading>
+            <b>"The SECURE hcm solution."</b> <i>- Wᴉred Magazine 2022</i>
+            <br/><br/>
             <Card.Heading>Login to your LazyNight profile.</Card.Heading>
             <Card.Body>
                 <div>
